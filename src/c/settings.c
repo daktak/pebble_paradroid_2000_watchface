@@ -4,7 +4,10 @@
 
 static ClaySettings settings;
 
+#define SETTINGS_VERSION 1
+
 static void prv_default_settings() {
+  settings.version = SETTINGS_VERSION;
   settings.droid_change = 5;
   settings.droid_select = 0;
   settings.quiet_time = false;
@@ -13,13 +16,17 @@ static void prv_default_settings() {
   settings.color_val = 0x00FFFFFF;
 }
 
+static void prv_save_settings() {
+  persist_write_data(SETTINGS_KEY, &settings, sizeof(settings));
+}
+
 void prv_load_settings() {
   prv_default_settings();
   persist_read_data(SETTINGS_KEY, &settings, sizeof(settings));
-}
-
-static void prv_save_settings() {
-  persist_write_data(SETTINGS_KEY, &settings, sizeof(settings));
+  if (settings.version != SETTINGS_VERSION) {
+    prv_default_settings();
+    prv_save_settings();
+  }
 }
 
 ClaySettings get_settings() {
