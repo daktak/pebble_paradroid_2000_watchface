@@ -1,7 +1,6 @@
 #include <pebble.h>
-
-#define STORAGE_KEY_COLOR 0
-#define DROID_COUNT 24
+#include "main.h"
+#include "settings.h"
 
 #define TIME_FONT FONT_KEY_LECO_42_NUMBERS
 #define ROW_H 50
@@ -35,11 +34,25 @@ static GColor get_time_color(int index) {
   }
 }
 
-static void change_droid() {
+void apply_color_index(int index) {
+  GColor c = get_time_color(index);
+  text_layer_set_text_color(s_hh_layer, c);
+  text_layer_set_text_color(s_mm_layer, c);
+}
+
+void change_droid() {
+  ClaySettings s = get_settings();
+  int idx = s.droid_select > 0 ? s.droid_select - 1 : rand() % DROID_COUNT;
   if (s_droid_bitmap) gbitmap_destroy(s_droid_bitmap);
-  s_droid_bitmap = gbitmap_create_with_resource(
-    DROID_RESOURCES[rand() % DROID_COUNT]);
+  s_droid_bitmap = gbitmap_create_with_resource(DROID_RESOURCES[idx]);
   bitmap_layer_set_bitmap(s_droid_layer, s_droid_bitmap);
+}
+
+static bool is_quiet_time(struct tm *tick_time, ClaySettings *s) {
+  if (!s->quiet_time) return false;
+  if (s->quiet_start < s->quiet_stop)
+    return tick_time->tm_hour >= s->quiet_start && tick_time->tm_hour < s->quiet_stop;
+  return tick_time->tm_hour >= s->quiet_start || tick_time->tm_hour < s->quiet_stop;
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -48,30 +61,27 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   strftime(s_mm_buf, sizeof(s_mm_buf), "%M", tick_time);
   text_layer_set_text(s_hh_layer, s_hh_buf);
   text_layer_set_text(s_mm_layer, s_mm_buf);
-  change_droid();
-}
 
-static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  Tuple *t = dict_find(iter, MESSAGE_KEY_COLOR_INDEX);
-  if (t) {
-    int index = (int)t->value->int32;
-    persist_write_int(STORAGE_KEY_COLOR, index);
-    GColor c = get_time_color(index);
-    text_layer_set_text_color(s_hh_layer, c);
-    text_layer_set_text_color(s_mm_layer, c);
+  ClaySettings s = get_settings();
+  if (is_quiet_time(tick_time, &s)) return;
+
+  if (s.droid_select == 0 && s.droid_change > 0 &&
+      tick_time->tm_min % s.droid_change == 0) {
+    change_droid();
   }
 }
 
 static void window_load(Window *window) {
   Layer *root = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(root);
+  ClaySettings s = get_settings();
 
   s_droid_layer = bitmap_layer_create(GRect(0, 0, bounds.size.w, bounds.size.h));
   bitmap_layer_set_compositing_mode(s_droid_layer, GCompOpAssign);
   layer_add_child(root, bitmap_layer_get_layer(s_droid_layer));
 
-  s_droid_bitmap = gbitmap_create_with_resource(
-    DROID_RESOURCES[rand() % DROID_COUNT]);
+  int idx = s.droid_select > 0 ? s.droid_select - 1 : rand() % DROID_COUNT;
+  s_droid_bitmap = gbitmap_create_with_resource(DROID_RESOURCES[idx]);
   bitmap_layer_set_bitmap(s_droid_layer, s_droid_bitmap);
 
   GSize img_sz = gbitmap_get_bounds(s_droid_bitmap).size;
@@ -84,7 +94,7 @@ static void window_load(Window *window) {
   layer_set_frame(bitmap_layer_get_layer(s_droid_layer),
                   GRect(0, 0, droid_w, bounds.size.h));
 
-  GColor tc = get_time_color(persist_read_int(STORAGE_KEY_COLOR));
+  GColor tc = get_time_color(s.color_index);
 
   s_hh_layer = text_layer_create(GRect(droid_w, y0, avail_w, ROW_H));
   text_layer_set_background_color(s_hh_layer, GColorClear);
@@ -117,8 +127,9 @@ static void window_unload(Window *window) {
 
 static void init(void) {
   srand(time(NULL));
-  app_message_register_inbox_received(inbox_received_handler);
-  app_message_open(64, 64);
+  prv_load_settings();
+  app_message_register_inbox_received(prv_inbox_received_handler);
+  app_message_open(256, 256);
 
   s_window = window_create();
   window_set_background_color(s_window, GColorBlack);
