@@ -8,9 +8,9 @@ mkdir -p $DEST_DIR
 for f in $FILES; do
   name=$(basename $f .jpg)
 
-  # Color (height 168, 64-color)
+  # Basalt (half watch width = 72, 64-color)
   ffmpeg -y -i $f -vf \
-    "crop=132:180:0:0,scale=-2:168:flags=lanczos,\
+    "crop=132:180:0:0,scale=72:-2:flags=lanczos,\
      split[s0][s1];\
      [s0]palettegen=max_colors=64[p];\
      [s1][p]paletteuse=dither=floyd_steinberg" \
@@ -23,13 +23,13 @@ for f in $FILES; do
     -dither FloydSteinberg -remap pattern:gray50 \
     ${DEST_DIR}/${name}~bw.png
 
-  # Emery (height 200, 64-color)
+  # Emery (half watch width = 100, 64-color)
   ffmpeg -y -i $f -vf \
-    "crop=132:180:0:0,scale=-2:200:flags=lanczos,\
+    "crop=132:180:0:0,scale=100:-2:flags=lanczos,\
      split[s0][s1];\
      [s0]palettegen=max_colors=64[p];\
      [s1][p]paletteuse=dither=floyd_steinberg" \
-    ${DEST_DIR}/${name}~color~200h.png
+    ${DEST_DIR}/${name}~color~228h.png
 done
 
 # App icon (48x48 → 24x24)
