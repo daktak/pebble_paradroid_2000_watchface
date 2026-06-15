@@ -29,7 +29,7 @@ for f in $FILES; do
      split[s0][s1];\
      [s0]palettegen=max_colors=64[p];\
      [s1][p]paletteuse=dither=floyd_steinberg" \
-    ${DEST_DIR}/${name}~200h~color.png
+    ${DEST_DIR}/${name}~color~200h.png
 done
 
 # App icon (48x48 → 24x24)
