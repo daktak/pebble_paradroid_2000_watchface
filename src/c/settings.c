@@ -5,12 +5,12 @@
 static ClaySettings settings;
 
 static void prv_default_settings() {
-  settings.droid_change = 1;
+  settings.droid_change = 5;
   settings.droid_select = 0;
   settings.quiet_time = false;
   settings.quiet_start = 23;
   settings.quiet_stop = 6;
-  settings.color_index = 0;
+  settings.color_val = 0x00FFFFFF;
 }
 
 void prv_load_settings() {
@@ -30,12 +30,7 @@ void prv_inbox_received_handler(DictionaryIterator *iter, void *context) {
   prv_default_settings();
 
   Tuple *t = dict_find(iter, MESSAGE_KEY_COLOR_INDEX);
-  if (t) {
-    int val = atoi(t->value->cstring);
-    if (val < 0) val = 0;
-    if (val > 4) val = 4;
-    settings.color_index = val;
-  }
+  if (t) settings.color_val = (uint32_t)t->value->int32;
 
   t = dict_find(iter, MESSAGE_KEY_DROID_SELECT);
   if (t) {
@@ -70,6 +65,6 @@ void prv_inbox_received_handler(DictionaryIterator *iter, void *context) {
   }
 
   prv_save_settings();
-  apply_color_index(settings.color_index);
+  apply_color_index(settings.color_val);
   change_droid();
 }

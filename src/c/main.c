@@ -24,18 +24,8 @@ static TextLayer *s_mm_layer;
 static char s_hh_buf[4];
 static char s_mm_buf[4];
 
-static GColor get_time_color(int index) {
-  switch (index) {
-    case 1:  return GColorGreen;
-    case 2:  return GColorYellow;
-    case 3:  return GColorCyan;
-    case 4:  return GColorOrange;
-    default: return GColorWhite;
-  }
-}
-
 void apply_color_index(int index) {
-  GColor c = get_time_color(index);
+  GColor c = GColorFromHEX((uint32_t)index);
   text_layer_set_text_color(s_hh_layer, c);
   text_layer_set_text_color(s_mm_layer, c);
 }
@@ -94,7 +84,7 @@ static void window_load(Window *window) {
   layer_set_frame(bitmap_layer_get_layer(s_droid_layer),
                   GRect(0, 0, droid_w, bounds.size.h));
 
-  GColor tc = get_time_color(s.color_index);
+  GColor tc = GColorFromHEX(s.color_val);
 
   s_hh_layer = text_layer_create(GRect(droid_w, y0, avail_w, ROW_H));
   text_layer_set_background_color(s_hh_layer, GColorClear);

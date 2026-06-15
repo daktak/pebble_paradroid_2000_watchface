@@ -9,7 +9,7 @@ typedef struct {
   bool quiet_time;
   int quiet_start;
   int quiet_stop;
-  int color_index;
+  uint32_t color_val;
 } ClaySettings;
 
 void prv_load_settings();

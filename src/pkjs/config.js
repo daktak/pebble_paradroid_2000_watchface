@@ -11,17 +11,10 @@ module.exports = [
         defaultValue: "Time Settings",
       },
       {
-        type: "select",
+        type: "color",
         messageKey: "COLOR_INDEX",
         label: "Time colour",
-        defaultValue: "0",
-        options: [
-          { label: "White", value: "0" },
-          { label: "Green", value: "1" },
-          { label: "Yellow", value: "2" },
-          { label: "Cyan", value: "3" },
-          { label: "Orange", value: "4" },
-        ],
+        defaultValue: "FFFFFF",
       },
     ],
   },
@@ -69,7 +62,7 @@ module.exports = [
         type: "select",
         messageKey: "DROID_CHANGE",
         label: "Change droid every",
-        defaultValue: "1",
+        defaultValue: "5",
         options: [
           { label: "Never", value: "0" },
           { label: "1 Minute", value: "1" },
