@@ -1,0 +1,40 @@
+{
+  "name": "my-pebble-app",
+  "author": "Your Name",
+  "version": "1.0.0",
+  "keywords": [
+    "pebble-app"
+  ],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "Paradroid",
+    "shortName": "Paradroid",
+    "longName": "Paradroid 2000",
+    "uuid": "4f5a1cc7-56d3-41f4-b3e0-54e581cfa830"
+    "sdkVersion": "3",
+    "enableMultiJS": false,
+    "targetPlatforms": [
+      "basalt",
+      "emery"
+    ],
+    "watchapp": {
+      "watchface": true
+    },
+    "capabilities": [
+      "configurable"
+    ],
+    "messageKeys": [
+      "COLOR_INDEX"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "png",
+          "name": "IMAGE_MENU_ICON",
+          "file": "images/menu_icon.png"
+        }
+      ]
+    }
+  }
+}
