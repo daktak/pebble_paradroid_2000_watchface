@@ -1,5 +1,5 @@
 #!/bin/bash -e
-DEST_DIR=resources/images
+DEST_DIR=images
 SRC_DIR=~/git/FreedroidClassic/graphics
 FILES=$(ls ${SRC_DIR}/???.jpg)
 
@@ -31,3 +31,13 @@ for f in $FILES; do
      [s1][p]paletteuse=dither=floyd_steinberg" \
     ${DEST_DIR}/${name}~200h~color.png
 done
+
+# App icon (48x48 → 24x24)
+convert ${SRC_DIR}/paraicon_48x48.png -scale 24x24 \
+  ${DEST_DIR}/icon~color.png
+
+convert ${DEST_DIR}/icon~color.png \
+  -background Black -flatten \
+  -colorspace Gray -sigmoidal-contrast 6x50% \
+  -dither FloydSteinberg -remap pattern:gray50 \
+  ${DEST_DIR}/icon~bw.png

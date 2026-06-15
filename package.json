@@ -32,7 +32,7 @@
         {
           "type": "png",
           "name": "IMAGE_MENU_ICON",
-          "file": "images/menu_icon.png"
+          "file": "images/icon.png"
         },
         {"type": "png", "name": "DROID_001", "file": "images/001.png", "targetPlatforms": null},
         {"type": "png", "name": "DROID_123", "file": "images/123.png", "targetPlatforms": null},
